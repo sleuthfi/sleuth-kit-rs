@@ -21,7 +21,7 @@ pub async fn query_transpose(config: &Config, sql_query: &str, params: &[(&str, 
 
     let response = client.post(url)
         .header("Content-Type", "application/json")
-        .header("X-API-KEY", config.transpose_api_key.as_ref().unwrap())
+        .header("X-API-KEY", config.transpose_api_key().unwrap())
         .json(&serde_json::json!({ "sql": query }))
         .send()
         .await?;

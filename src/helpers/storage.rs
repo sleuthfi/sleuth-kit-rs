@@ -6,12 +6,22 @@ use std::fs;
 use std::path::Path;
 
 pub async fn save_to_csv(data: &[Value], filepath: &str, fieldnames: &[&str]) -> Result<(), Box<dyn std::error::Error>> {
+    println!("Attempting to save data to CSV at: {}", filepath);
+    
     // Create the directory if it doesn't exist
     if let Some(parent) = Path::new(filepath).parent() {
         fs::create_dir_all(parent)?;
+        println!("Directory created or already exists: {:?}", parent);
     }
 
-    let mut wtr = Writer::from_writer(OpenOptions::new().write(true).create(true).append(true).open(filepath)?);
+    let file = OpenOptions::new()
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .open(filepath)?;
+    println!("File opened successfully: {}", filepath);
+
+    let mut wtr = Writer::from_writer(file);
     
     wtr.write_record(fieldnames)?;
     
@@ -24,6 +34,7 @@ pub async fn save_to_csv(data: &[Value], filepath: &str, fieldnames: &[&str]) ->
     }
     
     wtr.flush()?;
+    println!("Data successfully written to CSV");
     Ok(())
 }
 
