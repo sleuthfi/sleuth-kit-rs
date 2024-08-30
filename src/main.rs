@@ -14,7 +14,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     fs::create_dir_all("data/sqlite")?;
     
-    let database_path = Path::new("data/sqlite/blocks.db");
+    let database_path = Path::new("data/sqlite/sleuth.db");
     let database_url = format!("sqlite:{}", database_path.display());
 
     if !database_path.exists() {
