@@ -1,2 +1,226 @@
-# sleuth-kit
- A flexible and extensible osint toolkit designed for blockchain investigations and intelligence gathering.
+<h1 align="center">Sleuth Kit 🔍</h1>
+
+<p align="center">
+  <b>A Flexible OSINT Toolkit for Blockchain Investigations.</b>
+</p>
+
+<p align="center">
+ <a href="#overview">Overview</a> •
+ <a href="#features">Features</a> •
+ <a href="#project-structure">Project Structure</a> •
+ <a href="#installation">Installation</a> •
+ <a href="#usage">Usage</a> •
+ <a href="#configuration">Configuration</a> •
+ <a href="#contributing">Contributing</a> •
+ <a href="#license">License</a>
+</p>
+
+<div align="center">
+
+![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)
+![Language: Rust](https://img.shields.io/badge/Language-Rust-orange.svg)
+
+</div>
+
+## Overview
+
+Sleuth Kit is a flexible and extensible OSINT toolkit designed for blockchain investigations and intelligence gathering. It provides a suite of tools for compiling your own Data Lake of blockchain data and building custom tools for blockchain intelligence.
+
+### Current Roadmap
+
+- [ ] Add support for bitcoin
+- [ ] Add support for other EVM chains (Base, Arbitrum, Optimism, etc.)
+- [ ] Add support for Solana
+- [ ] Implement cross-chain timing analysis
+- [ ] Expand data tools:
+  - [ ] Address monitoring
+  - [ ] Smart contract event logging
+
+> [!NOTE]
+> This is the Rust version of the original [Python Sleuth Kit](https://github.com/sleuthfi/sleuth-kit).
+
+## How It Works
+
+```mermaid
+sequenceDiagram
+participant User
+participant CLI
+participant Config
+participant API
+participant Helpers
+participant Database
+participant CSV
+User->>CLI: Run sleuth command
+CLI->>Config: Load configuration
+CLI->>Helpers: Setup database schema
+Helpers->>Database: Create tables if not exist
+alt Query Ethereum Account
+User->>CLI: Choose "Query Ethereum Account"
+CLI->>User: Prompt for Ethereum address
+User->>CLI: Enter Ethereum address
+CLI->>API: query_ethereum_account(address)
+API->>API: load_sql_query('ethereum_accounts.sql')
+API->>API: query_transpose(sql_query, params)
+API-->>CLI: Return account data
+alt SAVE_AS_CSV is True
+CLI->>Helpers: save_to_csv(data, 'ethereum-accounts.csv', fields)
+Helpers->>CSV: Write data
+end
+alt SAVE_AS_SQLITE is True
+CLI->>Helpers: save_to_sqlite(data, 'ethereum_accounts')
+Helpers->>Database: Insert or update data
+end
+CLI-->>User: Display result message
+else Query Ethereum Transactions
+User->>CLI: Choose "Query Ethereum Transactions"
+CLI->>User: Prompt for Ethereum address
+User->>CLI: Enter Ethereum address
+CLI->>API: query_ethereum_transactions(address)
+API->>API: load_sql_query('ethereum_transactions.sql')
+loop Fetch all transactions
+API->>API: query_transpose(sql_query, params)
+end
+API-->>CLI: Return all transactions
+alt SAVE_AS_CSV is True
+CLI->>Helpers: save_to_csv(data, 'ethereum-transactions.csv', fields)
+Helpers->>CSV: Write transactions
+end
+alt SAVE_AS_SQLITE is True
+CLI->>Helpers: save_to_sqlite(data, 'ethereum_transactions')
+Helpers->>Database: Insert or update transactions
+end
+CLI-->>User: Display result message
+else Setup
+User->>CLI: Choose "Setup"
+CLI->>Helpers: setup_database_schema()
+Helpers->>Database: Create tables if not exist
+CLI->>User: Prompt for Transpose API key
+User->>CLI: Enter Transpose API key
+CLI->>Config: Save Transpose API key
+CLI-->>User: Display setup success message
+end
+```
+
+## Features
+
+- 🔍 **Ethereum Account Queries**: Retrieve detailed information about Ethereum accounts
+- 💼 **Transaction Analysis**: Fetch and analyze Ethereum transactions
+- 💾 **Flexible Data Storage**: Save data in CSV and SQLite formats
+- 🔧 **Extensible Framework**: Easily add support for more blockchains and data sources
+- 🖥️ **Interactive CLI**: User-friendly command-line interface for easy operation
+- 🔐 **Secure Configuration**: Environment-based configuration for API keys and settings
+
+## Project Structure
+
+```
+sleuth-kit/
+├── assets/
+│   └── sleuth-kit-logo.png
+├── src/
+│   ├── api/
+│   │   ├── mod.rs
+│   │   └── transpose.rs
+│   ├── cli/
+│   │   └── mod.rs
+│   ├── config/
+│   │   └── mod.rs
+│   ├── helpers/
+│   │   ├── mod.rs
+│   │   ├── setup_schema.rs
+│   │   └── storage.rs
+│   ├── sql/
+│   │   ├── ethereum_accounts.sql
+│   │   └── ethereum_transactions.sql
+│   └── main.rs
+├── data/
+│   ├── csv/
+│   └── sqlite/
+├── Cargo.toml
+├── .gitattributes
+├── .gitignore
+├── LICENSE
+└── README.md
+```
+
+## Installation
+
+### Prerequisites
+
+Ensure you have Rust installed on your system. If not, install it using the following methods:
+
+#### macOS
+
+1. Install Homebrew
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+2. Install Rust
+
+```bash
+brew install rust
+```
+
+
+#### Windows
+Download and run the Rust installer from the [official website](https://www.rust-lang.org/tools/install).
+
+### Installing Sleuth Kit
+
+Once the sleuth-kit crate is published, you can install it using Cargo:
+
+```bash
+cargo install sleuth-kit
+```
+
+
+## Usage
+
+1. Run the Sleuth Kit CLI:
+   ```
+   sleuth
+   ```
+
+2. Follow the interactive prompts to:
+   - Set up the database schema
+   - Configure your Transpose API key
+   - Query Ethereum account data
+   - Query Ethereum transaction data
+
+## Configuration
+
+Ensure that the `.env` file is set up with the following variables:
+
+- `TRANSPOSE_API_KEY`: Your Transpose API key
+- `SAVE_AS_CSV`: Set to "true" to save data as CSV (default: true)
+- `SAVE_AS_SQLITE`: Set to "true" to save data in SQLite (default: true)
+
+## Contributing
+
+If you'd like to contribute to the Sleuth Kit project, follow these steps:
+
+1. Clone the repository:
+   ```
+   git clone https://github.com/yourusername/sleuth-kit.git
+   cd sleuth-kit
+   ```
+
+2. Install dependencies:
+   ```
+   cargo build
+   ```
+
+3. Set up the environment variables:
+   Create a `.env` file in the project root and add the necessary variables.
+
+4. Run the project:
+   ```
+   cargo run
+   ```
+
+5. Make your changes and create a pull request with a clear description of the changes and their purpose.
+
+## License
+
+This project is licensed under the [GNU Affero General Public License v3.0](LICENSE).
