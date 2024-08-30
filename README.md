@@ -50,29 +50,48 @@ participant API
 participant Helpers
 participant Database
 participant CSV
+participant PostgreSQL
 User->>CLI: Run sleuth command
 CLI->>Config: Load configuration
 CLI->>Helpers: Setup database schema
-Helpers->>Database: Create tables if not exist
-alt Query Ethereum Account
-User->>CLI: Choose "Query Ethereum Account"
+Helpers->>Database: Create SQLite tables if not exist
+Helpers->>PostgreSQL: Create PostgreSQL tables if not exist
+loop Main Menu
+User->>CLI: Choose option
+alt Setup
+CLI->>User: Prompt for Transpose API key
+User->>CLI: Enter Transpose API key
+CLI->>Config: Save Transpose API key
+CLI->>User: Prompt for storage options
+User->>CLI: Select storage options
+CLI->>Config: Save storage preferences
+alt PostgreSQL selected
+CLI->>User: Prompt for PostgreSQL credentials
+User->>CLI: Enter PostgreSQL credentials
+CLI->>Config: Save PostgreSQL URL
+end
+CLI-->>User: Display setup success message
+else Query Ethereum Account
 CLI->>User: Prompt for Ethereum address
 User->>CLI: Enter Ethereum address
 CLI->>API: query_ethereum_account(address)
 API->>API: load_sql_query('ethereum_accounts.sql')
 API->>API: query_transpose(sql_query, params)
 API-->>CLI: Return account data
-alt SAVE_AS_CSV is True
+alt Save as CSV
 CLI->>Helpers: save_to_csv(data, 'ethereum-accounts.csv', fields)
 Helpers->>CSV: Write data
 end
-alt SAVE_AS_SQLITE is True
+alt Save as SQLite
 CLI->>Helpers: save_to_sqlite(data, 'ethereum_accounts')
 Helpers->>Database: Insert or update data
 end
+alt Save as PostgreSQL
+CLI->>Helpers: save_to_postgres(data, 'ethereum_accounts')
+Helpers->>PostgreSQL: Insert or update data
+end
 CLI-->>User: Display result message
 else Query Ethereum Transactions
-User->>CLI: Choose "Query Ethereum Transactions"
 CLI->>User: Prompt for Ethereum address
 User->>CLI: Enter Ethereum address
 CLI->>API: query_ethereum_transactions(address)
@@ -81,23 +100,26 @@ loop Fetch all transactions
 API->>API: query_transpose(sql_query, params)
 end
 API-->>CLI: Return all transactions
-alt SAVE_AS_CSV is True
+alt Save as CSV
 CLI->>Helpers: save_to_csv(data, 'ethereum-transactions.csv', fields)
 Helpers->>CSV: Write transactions
 end
-alt SAVE_AS_SQLITE is True
+alt Save as SQLite
 CLI->>Helpers: save_to_sqlite(data, 'ethereum_transactions')
 Helpers->>Database: Insert or update transactions
 end
+alt Save as PostgreSQL
+CLI->>Helpers: save_to_postgres(data, 'ethereum_transactions')
+Helpers->>PostgreSQL: Insert or update transactions
+end
 CLI-->>User: Display result message
-else Setup
-User->>CLI: Choose "Setup"
-CLI->>Helpers: setup_database_schema()
-Helpers->>Database: Create tables if not exist
-CLI->>User: Prompt for Transpose API key
-User->>CLI: Enter Transpose API key
-CLI->>Config: Save Transpose API key
-CLI-->>User: Display setup success message
+else Settings
+CLI->>User: Display current settings
+User->>CLI: Choose setting to modify
+CLI->>Config: Update configuration
+CLI-->>User: Display updated settings
+else Exit
+CLI-->>User: Exit program
 end
 ```
 
@@ -105,10 +127,12 @@ end
 
 - 🔍 **Ethereum Account Queries**: Retrieve detailed information about Ethereum accounts
 - 💼 **Transaction Analysis**: Fetch and analyze Ethereum transactions
-- 💾 **Flexible Data Storage**: Save data in CSV and SQLite formats
+- 💾 **Flexible Data Storage**: Save data in CSV, SQLite, and PostgreSQL formats
 - 🔧 **Extensible Framework**: Easily add support for more blockchains and data sources
-- 🖥️ **Interactive CLI**: User-friendly command-line interface for easy operation
-- 🔐 **Secure Configuration**: Environment-based configuration for API keys and settings
+- 🖥️ **Interactive CLI**: User-friendly command-line interface with a settings menu
+- 🔐 **Secure Configuration**: Environment-based configuration for API keys and database credentials
+- 🔄 **Configurable Storage Options**: Choose between CSV, SQLite, and PostgreSQL storage
+- 📊 **PostgreSQL Support**: Efficiently store and manage large datasets
 
 ## Project Structure
 
