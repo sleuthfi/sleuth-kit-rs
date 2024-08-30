@@ -168,7 +168,7 @@ Download and run the Rust installer from the [official website](https://www.rust
 
 ### Installing Sleuth Kit
 
-Once the sleuth-kit crate is published, you can install it using Cargo:
+You can install the latest version of the Sleuth Kit using Cargo:
 
 ```bash
 cargo install sleuth-kit
@@ -200,21 +200,23 @@ Ensure that the `.env` file is set up with the following variables:
 
 If you'd like to contribute to the Sleuth Kit project, follow these steps:
 
-1. Clone the repository:
+1. Fork the repository on GitHub.
+
+2. Clone your forked repository:
    ```
    git clone https://github.com/yourusername/sleuth-kit.git
    cd sleuth-kit
    ```
 
-2. Install dependencies:
+3. Install dependencies:
    ```
    cargo build
    ```
 
-3. Set up the environment variables:
+4. Set up the environment variables:
    Create a `.env` file in the project root and add the necessary variables.
 
-4. Run the project:
+5. Run the project:
    ```
    cargo run
    ```
