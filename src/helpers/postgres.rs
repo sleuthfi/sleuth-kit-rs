@@ -16,7 +16,7 @@ pub async fn setup_postgres_schema(pool: &PgPool) -> Result<(), sqlx::Error> {
         "CREATE TABLE IF NOT EXISTS ethereum_transactions (
             transaction_hash TEXT PRIMARY KEY,
             base_fee_per_gas NUMERIC,
-            block_number BIGINT,
+            block_number INTEGER,
             contract_address TEXT,
             fees_burned NUMERIC,
             fees_rewarded NUMERIC,
@@ -31,7 +31,7 @@ pub async fn setup_postgres_schema(pool: &PgPool) -> Result<(), sqlx::Error> {
             log_count INTEGER,
             max_fee_per_gas NUMERIC,
             max_priority_fee_per_gas NUMERIC,
-            nonce BIGINT,
+            nonce INTEGER,
             output TEXT,
             position INTEGER,
             timestamp TIMESTAMP,

@@ -18,8 +18,8 @@ impl Config {
             config
         } else {
             Config {
-                save_as_csv: env::var("SAVE_AS_CSV").unwrap_or_else(|_| "false".to_string()).to_lowercase() == "true",
-                save_as_sqlite: env::var("SAVE_AS_SQLITE").unwrap_or_else(|_| "false".to_string()).to_lowercase() == "true",
+                save_as_csv: env::var("SAVE_AS_CSV").unwrap_or_else(|_| "true".to_string()).to_lowercase() == "true",
+                save_as_sqlite: env::var("SAVE_AS_SQLITE").unwrap_or_else(|_| "true".to_string()).to_lowercase() == "true",
                 save_as_postgres: env::var("SAVE_AS_POSTGRES").unwrap_or_else(|_| "false".to_string()).to_lowercase() == "true",
             }
         }

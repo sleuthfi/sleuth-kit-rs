@@ -2,6 +2,10 @@ mod api;
 mod cli;
 mod config;
 mod helpers;
+mod db;
+mod models;
+mod utils;
+mod ui;
 
 use config::Config;
 use sqlx::sqlite::SqlitePool;
@@ -13,7 +17,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let sqlite_pool = if config.save_as_sqlite {
         match SqlitePool::connect("sqlite:data/sqlite/sleuth.db").await {
-            Ok(pool) => Some(pool),
+            Ok(pool) => {
+                println!("Successfully connected to SQLite database.");
+                Some(pool)
+            },
             Err(e) => {
                 eprintln!("Error connecting to SQLite: {}", e);
                 None
@@ -26,7 +33,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let pg_pool = if config.save_as_postgres {
         if let Some(postgres_url) = config.postgres_url() {
             match PgPool::connect(&postgres_url).await {
-                Ok(pool) => Some(pool),
+                Ok(pool) => {
+                    println!("Successfully connected to PostgreSQL database.");
+                    Some(pool)
+                },
                 Err(e) => {
                     eprintln!("Error connecting to PostgreSQL: {}", e);
                     None
